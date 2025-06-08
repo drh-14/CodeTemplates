@@ -1,1 +1,0 @@
-Welcome to CodeTemplates, an app to create, edit, and save code templates in various languages.
