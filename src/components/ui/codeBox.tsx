@@ -1,7 +1,8 @@
 'use client'
 import CodeMirror from '@uiw/react-codemirror';
-import { javascript } from '@codemirror/lang-javascript';
 import { useCallback, Dispatch, SetStateAction } from 'react';
+import { langs } from '@uiw/codemirror-extensions-langs';
+import * as themes from '@uiw/codemirror-themes-all'
 
 export default function CodeBox(props: {value:string, setValue: Dispatch<SetStateAction<string>>}){
     const onChange = useCallback((val:string) => {
@@ -9,8 +10,8 @@ export default function CodeBox(props: {value:string, setValue: Dispatch<SetStat
     props.setValue(val);
   }, [props]);
     return(
-        <div className = 'w-1/3 border-2 border-black border-solid p-4 rounded-md h-1/3 overflow-y-auto max-h-180'>
-            <CodeMirror className = 'w-full' value = {props.value} onChange = {onChange} extensions={[javascript({ jsx: true})]}></CodeMirror>
+        <div className = 'w-1/3 border-2 border-black border-solid p-2 rounded-sm h-1/3 overflow-y-auto max-h-180'>
+            <CodeMirror theme = {themes.githubDark} className = 'w-full' value = {props.value} onChange = {onChange} extensions={[langs.csharp()]}></CodeMirror>
         </div>
     )
 }

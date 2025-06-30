@@ -2,7 +2,6 @@
 import { Input } from './input';
 import { Button } from './button';
 import { useState } from 'react';
-import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
 export default function SignInBox() {
@@ -27,13 +26,20 @@ export default function SignInBox() {
             setPasswordError("Password cannot be empty.");
         }
         if (!emailError && !usernameError && !passwordError) {
-            const response = await axios.put("http://localhost:3000/signUp", { email: email, username: username, password: password });
+            const response = await fetch("http://localhost:8000/user", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({email: email, username: username, password: password})
+            });
             if (response.status === 200) {
                 router.push('/homePage');
             }
             else{
-                if(response.data === "Username already in use"){
-                    setUsernameError(response.data);
+                const data = await response.json();
+                if(data === "Username already in use"){
+                    setUsernameError(data);
                 }
             }
         }
