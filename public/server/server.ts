@@ -5,6 +5,7 @@ import * as jwt from 'jsonwebtoken'
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { v4 as uuidv4 } from 'uuid';
+import * as sgMail from '@sendgrid/mail';
 
 dotenv.config();
 const app = express();
@@ -16,6 +17,8 @@ app.use(cors({
 }));
 
 const supabaseClient = createClient("https://jkosvxuxzuxvzoqtwoup.supabase.co", process.env.SUPABASE_KEY!);
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
 
@@ -112,6 +115,23 @@ app.delete('/user', async (req, res) => {
     }
 });
 
+app.post('/resetCredentials', async (req, res) => {
+    const email = req.body;
+    const msg = {
+        to: `${email}`,
+        from: "placeholder@example.com",
+        subject: "CodeTemplates: Reset credentials",
+        html: `<h1>Go to the following link to reset your email: <a href = "http://localhost:3000/resetCredentials"></a></h1>`
+    };
+    try{
+        await sgMail.send(msg);
+    }
+    catch(error){
+        console.error(error);
+        res.status(401).json(error);
+    }
+});
+
 app.get("/templates", async (req, res) => {
     try {
         const token = req.cookies.token;
@@ -128,7 +148,7 @@ app.get("/templates", async (req, res) => {
     catch (error) {
         res.status(500).json(error);
     }
-})
+});
 
 // Create new code template
 app.put('/template', async (req, res) => {

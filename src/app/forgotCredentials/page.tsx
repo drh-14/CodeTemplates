@@ -2,21 +2,22 @@
 import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
 import { useState } from 'react';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
 export default function ForgotCredentials(){
-    const router = useRouter();
     const [email, setEmail] = useState("");
     const [isError, setIsError] = useState(false);
     const resetCredentials = async () => {
-        const res = await axios.post('/credentials', email);
-        if(res.status === 200){
-            router.push('/confirmation');
-        }
-        else{
+        setIsError(false);
+        const res = await fetch("http://localhost:8000/resetCredentials", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(email)
+        });
+        if(res.status !== 200){
             setIsError(true);
         }
-    }
+    };
     return(
         <div className = 'flex justify-center mt-24'>
             <div className = 'w-1/2 flex flex-col p-4 border-2 border-black border-solid rounded-md gap-8'>
