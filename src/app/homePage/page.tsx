@@ -2,7 +2,18 @@ import { Button } from '../../components/ui/button';
 import TemplateListing from '../../components/ui/templateListing';
 import { HomeButtons } from '../../components/ui/homeButtons';
 import Link from 'next/link';
+import { redirect } from "next/navigation";
 export default async function HomePage(){
+    const verifyJwtResponse = await fetch("http://localhost:8000/jwt", {
+        "method": "GET",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+    if(verifyJwtResponse.status === 401){
+        redirect('/');
+    }
     //const response = await fetch("http://localhost:8000/templates", {
        // method: "GET",
         //headers: {

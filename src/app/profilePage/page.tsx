@@ -7,12 +7,25 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '../../components/ui/button';
 import { handleSignOut } from '../../components/ui/homeButtons';
 import { useRouter } from 'next/navigation';
 export default function ProfilePage() {
     const router = useRouter();
+    useEffect(() => {
+        const verifyJWT = async () => {
+            const response = await fetch('http://localhost:8000/jwt', {
+                method: "GET",
+                credentials: "include"
+            });
+            if(response.status === 401){
+                router.push('/');
+            }
+        }
+        verifyJWT();
+
+    }, [router]);
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -20,6 +33,7 @@ export default function ProfilePage() {
     const changeEmail =  async () => {
         const response = await fetch("http://localhost:8000/email", {
             method: "POST",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -32,6 +46,7 @@ export default function ProfilePage() {
     const changeUsername = async () => {
         const response = await fetch("http://localhost:8000/username", {
             method: "POST",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -45,6 +60,7 @@ export default function ProfilePage() {
     const changePassword = async () => {
         const response = await fetch("http://localhost:8000/password", {
             method: "POST",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -58,6 +74,7 @@ export default function ProfilePage() {
     const deleteAccount = async () => {
         const response = await fetch("http://localhost:8000/user", {
             method: "DELETE",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -65,7 +82,6 @@ export default function ProfilePage() {
         if(response.status === 200){
             console.log("Account successfully deleted.");
         }
-
     };
 
     return (

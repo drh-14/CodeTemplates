@@ -12,7 +12,22 @@ export default function TemplatePage() {
     const id = searchParams.get('id');
     const [name, setName] = useState(searchParams.get('name') || "");
     const [value, setValue] = useState("");
-    const [language, setLanguage] = useState("");
+    const [language, setLanguage] = useState(searchParams.get('language') || "");
+    const [nameError, setNameError] = useState("");
+    const [languageError, setLanguageError] = useState("");
+
+    useEffect(() => {
+        const verifyJWT = async () => {
+            const response = await fetch("http://localhost:8000/jwt", {
+                method: "GET",
+                credentials: "include"
+            });
+            if(response.status === 401){
+                router.push('/');
+            }
+        };
+        verifyJWT();
+    }, [router]);
 
     useEffect(() => {
         const getCode = async () => {
@@ -30,10 +45,21 @@ export default function TemplatePage() {
         getCode();
     }, [id]);
 
+
     const saveChanges = async () => {
         try {
-            const response = await fetch("http://localhost:8000/template", {
+            setNameError("");
+            setLanguageError("");
+            if(name.length === 0){
+                setNameError("Template name cannot be empty.");
+            }
+            if(language.length === 0){
+                setLanguageError("Must select a language.");
+            }
+            if(!nameError  && !languageError){
+                const response = await fetch("http://localhost:8000/template", {
                 method: "POST",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -42,15 +68,18 @@ export default function TemplatePage() {
             if (response.status === 200) {
                 router.push('/homePage');
             }
+            }
         }
         catch (error) {
             console.error(error);
         }
     };
+
     const deleteTemplate = async () => {
         try {
             const response = await fetch(`http://localhost:8000/template/:${id}`, {
-                method: "DELETE"
+                method: "DELETE",
+                credentials: "include"
             });
             if (response.status === 200) {
                 router.push('/homePage');
@@ -63,7 +92,9 @@ export default function TemplatePage() {
     return (
         <div className='flex flex-col gap-8 items-center mt-24'>
             <LanguageDropdown language = {language} setLanguage = {setLanguage}></LanguageDropdown>
+            {languageError ? <h1 className = 'text-red-600'>{languageError}</h1> : null}
             <Input className='w-1/4 border-2 border-black rounded-md' placeholder="Template Name" onChange={(e) => setName(e.target.value)}></Input>
+            {nameError ? <h1 className = 'text-red-600'>{nameError}</h1> : null}
             <CodeBox language = "java" value={value} setValue={setValue}></CodeBox>
             <Button onClick={saveChanges}>Save Changes</Button>
             <Button onClick={deleteTemplate}>Delete Template</Button>

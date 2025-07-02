@@ -5,10 +5,8 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 import { langNames } from '@uiw/codemirror-extensions-langs';
 import { Dispatch } from "react";
-
 
 export default function LanguageDropdown(props: {language: string, setLanguage: Dispatch<React.SetStateAction<string>> }){
     return(

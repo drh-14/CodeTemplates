@@ -11,7 +11,7 @@ export default function CodeBox(props: {language: string, value:string, setValue
   }, [props]);
     return(
         <div className = 'w-1/3 border-2 border-black border-solid p-2 rounded-sm h-1/3 overflow-y-auto max-h-180'>
-            <CodeMirror theme = {themes.githubDark} className = 'w-full' value = {props.value} onChange = {onChange} extensions={[langs[props.language as keyof typeof langs]()]}></CodeMirror>
+            <CodeMirror theme = {themes.githubDark} className = 'w-full rounded-md' value = {props.value} onChange = {onChange} extensions={langs[props.language as keyof typeof langs] ? [langs[props.language as keyof typeof langs]()] : []}></CodeMirror>
         </div>
     )
 }

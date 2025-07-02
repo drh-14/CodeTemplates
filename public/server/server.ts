@@ -1,5 +1,5 @@
 import express from 'express';
-import * as functions from './functions.ts';
+import * as functions from './functions';
 import { createClient } from '@supabase/supabase-js';
 import * as jwt from 'jsonwebtoken'
 import dotenv from 'dotenv';
@@ -242,5 +242,17 @@ app.post('/password', async (req, res) => {
     }
     catch (error) {
         res.status(500).json(error);
+    }
+});
+
+app.get('/jwt', async (req, res) => {
+    try{
+        const token = req.cookies.token;
+        await jwt.verify(token, process.env.JWT_KEY!);
+        res.status(200).json("Valid token.");
+
+    }
+    catch(error){
+        res.status(401).json(error);
     }
 });
