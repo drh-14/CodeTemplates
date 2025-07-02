@@ -117,18 +117,30 @@ app.delete('/user', async (req, res) => {
 
 app.post('/resetCredentials', async (req, res) => {
     const email = req.body;
-    const msg = {
-        to: `${email}`,
-        from: "placeholder@example.com",
-        subject: "CodeTemplates: Reset credentials",
-        html: `<h1>Go to the following link to reset your email: <a href = "http://localhost:3000/resetCredentials"></a></h1>`
-    };
-    try{
-        await sgMail.send(msg);
+    const { data, error } = await supabaseClient.from('users').select().eq("email", email);
+    if (error) {
+        res.status(500).json(error.message);
     }
-    catch(error){
-        console.error(error);
-        res.status(401).json(error);
+    else {
+        if (data.length === 0) {
+            res.status(500).json("Email not found.");
+        }
+        else {
+            const msg = {
+                to: `${email}`,
+                from: "placeholder@example.com",
+                subject: "CodeTemplates: Reset credentials",
+                html: `<h1>Go to the following link to reset your email: <a href = "http://localhost:3000/resetCredentials"></a></h1>`
+            };
+            try {
+                await sgMail.send(msg);
+            }
+            catch (error) {
+                console.error(error);
+                res.status(401).json(error);
+            }
+
+        }
     }
 });
 
@@ -266,13 +278,13 @@ app.post('/password', async (req, res) => {
 });
 
 app.get('/jwt', async (req, res) => {
-    try{
+    try {
         const token = req.cookies.token;
         await jwt.verify(token, process.env.JWT_KEY!);
         res.status(200).json("Valid token.");
 
     }
-    catch(error){
+    catch (error) {
         res.status(401).json(error);
     }
 });
