@@ -144,6 +144,24 @@ app.post('/resetCredentials', async (req, res) => {
     }
 });
 
+app.post('/credentials', async (req, res) => {
+    const {email, username, password} = req.body;
+    const hashedPassword = await functions.hashPassword(password);
+    try{
+        const {error} = await supabaseClient.from('users').update({email: email, username: username, password: hashedPassword});
+        if(error){
+            res.status(401).json(error.message);
+        }
+        else{
+            res.status(200).json("Changed credentials successfully.");
+        }
+    }
+    catch(error){
+        console.error(error);
+        res.status(500).json(error);
+    }
+});
+
 app.get("/templates", async (req, res) => {
     try {
         const token = req.cookies.token;
