@@ -18,7 +18,7 @@ export default function TemplatePage() {
 
     useEffect(() => {
         const verifyJWT = async () => {
-            const response = await fetch("http://localhost:8000/jwt", {
+            const response = await fetch("http://localhost:8000/jwtClient", {
                 method: "GET",
                 credentials: "include"
             });
@@ -31,15 +31,15 @@ export default function TemplatePage() {
 
     useEffect(() => {
         const getCode = async () => {
-            const response = await fetch(`http://localhost:8000/:${id}`, {
+            const response = await fetch(`http://localhost:8000/template/${id}`, {
                 method: "GET",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                credentials: "include"
             });
             if(response.status === 200){
                 const data = await response.json();
-                setValue(data);
+                setValue(data.code);
+                setName(data.name);
+                setLanguage(data.language);
             }
         }
         getCode();
@@ -57,7 +57,7 @@ export default function TemplatePage() {
                 setLanguageError("Must select a language.");
             }
             if(!nameError  && !languageError){
-                const response = await fetch("http://localhost:8000/template", {
+                const response = await fetch(`http://localhost:8000/template/${id}`, {
                 method: "POST",
                 credentials: "include",
                 headers: {
@@ -77,7 +77,7 @@ export default function TemplatePage() {
 
     const deleteTemplate = async () => {
         try {
-            const response = await fetch(`http://localhost:8000/template/:${id}`, {
+            const response = await fetch(`http://localhost:8000/template/${id}`, {
                 method: "DELETE",
                 credentials: "include"
             });
@@ -93,7 +93,7 @@ export default function TemplatePage() {
         <div className='flex flex-col gap-8 items-center mt-24'>
             <LanguageDropdown language = {language} setLanguage = {setLanguage}></LanguageDropdown>
             {languageError ? <h1 className = 'text-red-600'>{languageError}</h1> : null}
-            <Input className='w-1/4 border-2 border-black rounded-md' placeholder="Template Name" onChange={(e) => setName(e.target.value)}></Input>
+            <Input value = {name} className='w-1/4 border-2 border-black rounded-md' placeholder="Template Name" onChange={(e) => setName(e.target.value)}></Input>
             {nameError ? <h1 className = 'text-red-600'>{nameError}</h1> : null}
             <CodeBox language = "java" value={value} setValue={setValue}></CodeBox>
             <Button onClick={saveChanges}>Save Changes</Button>

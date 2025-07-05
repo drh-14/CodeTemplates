@@ -12,10 +12,14 @@ import { Button } from '../../components/ui/button';
 import { handleSignOut } from '../../components/ui/homeButtons';
 import { useRouter } from 'next/navigation';
 export default function ProfilePage() {
+    const [changeUsernameOpen, setChangeUsernameOpen] = useState(false);
+    const [changeEmailOpen, setChangeEmailOpen] = useState(false);
+    const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+    const [deleteAccountOpen, setDeleteAccountOpen] = useState(false);
     const router = useRouter();
     useEffect(() => {
         const verifyJWT = async () => {
-            const response = await fetch('http://localhost:8000/jwt', {
+            const response = await fetch('http://localhost:8000/jwtClient', {
                 method: "GET",
                 credentials: "include"
             });
@@ -37,10 +41,11 @@ export default function ProfilePage() {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(email)
+            body: JSON.stringify({email: email})
         });
         if(response.status === 200){
             console.log("Email change successful.");
+            setChangeEmailOpen(false);
         }
     };
     const changeUsername = async () => {
@@ -50,10 +55,11 @@ export default function ProfilePage() {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(username)
+            body: JSON.stringify({username: username})
         });
         if(response.status === 200){
             console.log("Username changed successfully.");
+            setChangeUsernameOpen(false);
         }
     };
 
@@ -64,10 +70,11 @@ export default function ProfilePage() {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(password)
+            body: JSON.stringify({password: password})
         });
         if(response.status === 200){
             console.log("Password changed successfully.");
+            setChangePasswordOpen(false);
         }
     };
 
@@ -81,6 +88,7 @@ export default function ProfilePage() {
         });
         if(response.status === 200){
             console.log("Account successfully deleted.");
+            router.push('/');
         }
     };
 
@@ -89,8 +97,8 @@ export default function ProfilePage() {
             <Button onClick = {() => handleSignOut(router)} className = 'ml-auto mr-12'>Sign Out</Button>
             <h1 className='text-5xl'>Welcome</h1>
             <div className='flex flex-col items-center gap-8'>
-                <Dialog>
-                    <DialogTrigger asChild><Button>Change Email</Button></DialogTrigger>
+                <Dialog open = {changeEmailOpen}>
+                    <DialogTrigger asChild><Button onClick = {() => setChangeEmailOpen(true)}>Change Email</Button></DialogTrigger>
                     <DialogContent>
                         <DialogTitle></DialogTitle>
                         <div className = 'flex flex-col gap-6'>
@@ -99,8 +107,8 @@ export default function ProfilePage() {
                         </div>
                     </DialogContent>
                 </Dialog>
-                <Dialog>
-                    <DialogTrigger asChild><Button>Change Username</Button></DialogTrigger>
+                <Dialog open = {changeUsernameOpen}>
+                    <DialogTrigger asChild><Button onClick = {() => setChangeUsernameOpen(true)}>Change Username</Button></DialogTrigger>
                     <DialogContent>
                         <DialogHeader>
                             <DialogTitle></DialogTitle>
@@ -111,8 +119,8 @@ export default function ProfilePage() {
                         </DialogHeader>
                     </DialogContent>
                 </Dialog>
-                <Dialog>
-                    <DialogTrigger asChild><Button>Change Password</Button></DialogTrigger>
+                <Dialog open = {changePasswordOpen}>
+                    <DialogTrigger asChild><Button onClick = {() => setChangePasswordOpen(true)}>Change Password</Button></DialogTrigger>
                     <DialogContent>
                         <DialogHeader>
                             <DialogTitle></DialogTitle>
@@ -123,8 +131,8 @@ export default function ProfilePage() {
                         </DialogHeader>
                     </DialogContent>
                 </Dialog>
-                <Dialog>
-                    <DialogTrigger asChild><Button>Delete Account</Button></DialogTrigger>
+                <Dialog open = {deleteAccountOpen}>
+                    <DialogTrigger asChild><Button onClick = {() => setDeleteAccountOpen(true)}>Delete Account</Button></DialogTrigger>
                     <DialogContent>
                         <DialogHeader>
                             <div className = 'flex flex-col gap-6'>

@@ -3,7 +3,6 @@ import { Input } from './input';
 import { Button } from './button';
 import Link from 'next/link';
 import { useState } from 'react';
-import axios from 'axios';
 import { useRouter } from 'next/navigation';
 export default function SignInBox(){
     const router = useRouter();
@@ -11,12 +10,21 @@ export default function SignInBox(){
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const handleLogin = async () => {
-        const response = await axios.post("http://localhost:3000/login", {username: username, password: password});
+        const response = await fetch("http://localhost:8000/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify({username: username, password: password})
+        });
+        const data = await response.json();
+        console.log(data);
         if(response.status === 200){
             router.push('/homePage');
         }
         else{
-            if(response.data === "Invalid username and invalid password"){
+            if(data === "Invalid username and invalid password"){
                 setError("Invalid username or password.");
             }
         }

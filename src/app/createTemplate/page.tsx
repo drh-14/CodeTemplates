@@ -15,7 +15,7 @@ export default function CreateTemplate(){
 
     useEffect(() => {
         const verifyJWT = async () => {
-            const response = await fetch("http://localhost:8000/jwt", {
+            const response = await fetch("http://localhost:8000/jwtClient", {
                 method: "GET",
                 credentials: "include"
             });
@@ -40,6 +40,7 @@ export default function CreateTemplate(){
             if(!nameError && !languageError){
                  const response = await fetch("http://localhost:8000/template", {
                 method: "PUT",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json"
                 },

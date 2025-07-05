@@ -1,11 +1,13 @@
 import express from 'express';
 import * as functions from './functions';
 import { createClient } from '@supabase/supabase-js';
-import * as jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { v4 as uuidv4 } from 'uuid';
-import * as sgMail from '@sendgrid/mail';
+import sgMail from '@sendgrid/mail';
+import * as bcrypt from 'bcrypt';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 const app = express();
@@ -13,8 +15,10 @@ const PORT = 8000;
 
 app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:3000'
+    origin: 'http://localhost:3000',
+    credentials: true
 }));
+app.use(cookieParser());
 
 const supabaseClient = createClient("https://jkosvxuxzuxvzoqtwoup.supabase.co", process.env.SUPABASE_KEY!);
 
@@ -25,20 +29,26 @@ app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
 app.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
-        const hashedPassword = functions.hashPassword(password);
-        const { data, error } = await supabaseClient.from("users").select().eq('username', username).eq('password', hashedPassword);
-        if (error) {
-            res.status(500).json("Invalid username or password");
+        const { data, error } = await supabaseClient.from("users").select().eq('username', username);
+        if (!data) {
+            res.status(500).json("Invalid username.");
         }
         else {
-            const token = functions.createJWT(username, data[0].userID);
-            res.cookie("token", token, {
-                httpOnly: true,
-                secure: true,
-                sameSite: 'strict',
-                maxAge: 60 * 60 * 1000
-            });
-            res.status(200).json("Login successful");
+            const userPassword = data[0].password;
+            const comparisonResult = await bcrypt.compare(password, userPassword);
+            if (!comparisonResult) {
+                res.status(500).json("Invalid password.");
+            }
+            else {
+                const token = functions.createJWT(data[0].userID);
+                console.log(`Token ${token}`);
+                res.cookie("token", token, {
+                    httpOnly: true,
+                    sameSite: 'strict',
+                    maxAge: 60 * 60 * 1000
+                });
+                res.status(200).json("Logged in successfully.");
+            }
         }
     }
     catch (error) {
@@ -90,6 +100,12 @@ app.put('/user', async (req, res) => {
                         res.status(500).json(error);
                     }
                     else {
+                        const token = functions.createJWT(data[0].userID);
+                        res.cookie("token", token, {
+                            httpOnly: true,
+                            sameSite: 'strict',
+                            maxAge: 60 * 60 * 1000
+                        });
                         res.status(200).json("Account creation successful.");
                     }
                 }
@@ -100,8 +116,9 @@ app.put('/user', async (req, res) => {
 
 app.delete('/user', async (req, res) => {
     try {
-        const verifiedToken = jwt.verify(req.cookies.token, process.env.JWT_KEY!) as { userID: string };
-        const { error } = await supabaseClient.from("users").delete().eq('userID', verifiedToken.userID);
+        const payload = await jwt.verify(req.cookies.token, process.env.JWT_KEY!) as jwt.JwtPayload;
+        const userID = payload.userID;
+        const { error } = await supabaseClient.from("users").delete().eq('userID', userID);
         if (error) {
             res.status(500).json(error);
         }
@@ -145,18 +162,18 @@ app.post('/resetCredentials', async (req, res) => {
 });
 
 app.post('/credentials', async (req, res) => {
-    const {email, username, password} = req.body;
+    const { email, username, password } = req.body;
     const hashedPassword = await functions.hashPassword(password);
-    try{
-        const {error} = await supabaseClient.from('users').update({email: email, username: username, password: hashedPassword});
-        if(error){
+    try {
+        const { error } = await supabaseClient.from('users').update({ email: email, username: username, password: hashedPassword });
+        if (error) {
             res.status(401).json(error.message);
         }
-        else{
+        else {
             res.status(200).json("Changed credentials successfully.");
         }
     }
-    catch(error){
+    catch (error) {
         console.error(error);
         res.status(500).json(error);
     }
@@ -164,9 +181,9 @@ app.post('/credentials', async (req, res) => {
 
 app.get("/templates", async (req, res) => {
     try {
-        const token = req.cookies.token;
+        const token = req.headers.authorization as string;
         const payload = jwt.verify(token, process.env.JWT_KEY!) as jwt.JwtPayload;
-        const userID = payload.id;
+        const userID = payload.userID;
         const { data, error } = await supabaseClient.from('templates').select().match({ userID: userID });
         if (error) {
             res.status(500).json(error.message);
@@ -180,15 +197,38 @@ app.get("/templates", async (req, res) => {
     }
 });
 
+app.get('/template/:id', async (req, res) => {
+    try {
+        const token = req.cookies.token;
+        await jwt.verify(token, process.env.JWT_KEY!) as jwt.JwtPayload;
+        const id = req.params.id;
+        console.log(`Id ${id}`);
+        const { data, error } = await supabaseClient.from('templates').select('name, language, code').eq('id', id);
+        if (error) {
+            console.log(error.message);
+            res.status(401).json(error.message);
+        }
+        else {
+            res.status(200).json(data[0]);
+        }
+
+    }
+    catch (error) {
+        res.status(500).json(error);
+    }
+})
+
 // Create new code template
 app.put('/template', async (req, res) => {
     try {
         const token = req.cookies.token;
         const payload = jwt.verify(token, process.env.JWT_KEY!) as jwt.JwtPayload;
-        const { code, language } = req.body;
+        const userID = payload.userID;
+        const { code, language, name } = req.body;
         const id = uuidv4();
-        const { error } = await supabaseClient.from('templates').insert({ id: id, username: payload.username, code: code, language: language });
+        const { error } = await supabaseClient.from('templates').insert({ id: id, name: name, userID: userID, code: code, language: language });
         if (error) {
+            console.log(error.message);
             res.status(500).json(error.message);
         }
         else {
@@ -196,13 +236,15 @@ app.put('/template', async (req, res) => {
         }
     }
     catch (error) {
+        console.log(error);
         res.status(500).json(error);
     }
 });
 
 // Modify code template
-app.post('template/:id', async (req, res) => {
+app.post('/template/:id', async (req, res) => {
     try {
+        console.log(req.params);
         const token = req.cookies.token;
         await jwt.verify(token, process.env.JWT_KEY!) as jwt.JwtPayload;
         const { code, name, language } = req.body;
@@ -220,7 +262,7 @@ app.post('template/:id', async (req, res) => {
     }
 });
 
-app.delete('template/:id', async (req, res) => {
+app.delete('/template/:id', async (req, res) => {
     try {
         const token = req.cookies.token;
         await jwt.verify(token, process.env.JWT_KEY!);
@@ -241,9 +283,10 @@ app.delete('template/:id', async (req, res) => {
 app.post('/email', async (req, res) => {
     try {
         const token = req.cookies.token;
-        await jwt.verify(token, process.env.JWT_KEY!);
-        const email = req.body;
-        const { error } = await supabaseClient.from('users').update({ email: email });
+        const payload = await jwt.verify(token, process.env.JWT_KEY!) as jwt.JwtPayload;
+        const userID = payload.userID;
+        const { email } = req.body;
+        const { error } = await supabaseClient.from('users').update({ email: email }).eq('userID', userID);
         if (error) {
             res.status(500).json(error.message);
         }
@@ -260,9 +303,10 @@ app.post('/email', async (req, res) => {
 app.post('/username', async (req, res) => {
     try {
         const token = req.cookies.token;
-        await jwt.verify(token, process.env.JWT_KEY!);
-        const username = req.body;
-        const { error } = await supabaseClient.from('users').update({ username: username });
+        const payload = await jwt.verify(token, process.env.JWT_KEY!) as jwt.JwtPayload;
+        const userID = payload.userID;
+        const { username } = req.body;
+        const { error } = await supabaseClient.from('users').update({ username: username }).eq('userID', userID);
         if (error) {
             res.status(500).json(error.message);
         }
@@ -280,9 +324,9 @@ app.post('/password', async (req, res) => {
         const token = req.cookies.token;
         const payload = await jwt.verify(token, process.env.JWT_KEY!) as jwt.JwtPayload;
         const userID = payload.userID;
-        const password = req.body;
+        const { password } = req.body;
         const hashedPassword = await functions.hashPassword(password);
-        const { error } = await supabaseClient.from('users').update({ userID: userID, password: hashedPassword });
+        const { error } = await supabaseClient.from('users').update({ userID: userID, password: hashedPassword }).eq('userID', userID);
         if (error) {
             res.status(500).json(error.message);
         }
@@ -295,14 +339,28 @@ app.post('/password', async (req, res) => {
     }
 });
 
-app.get('/jwt', async (req, res) => {
+app.get('/jwtClient', async (req, res) => {
     try {
         const token = req.cookies.token;
         await jwt.verify(token, process.env.JWT_KEY!);
         res.status(200).json("Valid token.");
+    }
+    catch (error) {
+        console.log(error);
+        res.status(401).json(error);
+    }
+
+})
+
+app.get('/jwtServer', async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization as string;
+        await jwt.verify(authHeader, process.env.JWT_KEY!);
+        res.status(200).json("Valid token.");
 
     }
     catch (error) {
+        console.log(error);
         res.status(401).json(error);
     }
 });
