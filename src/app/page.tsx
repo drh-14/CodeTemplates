@@ -9,11 +9,10 @@ export default function Home() {
       <h1 className = 'text-3xl'>Your tool to create and save custom code templates.</h1>
       <div className = 'mt-72 items-center gap-36 flex flex-col text-center text-4xl'>
         <div className = 'flex gap-24'>
-        <Feature text = "testing123" imageUrl = "/1"></Feature>
-        <Feature text = "testing123" imageUrl = "/1"></Feature>
-        <Feature text = "testing123" imageUrl = "/1"></Feature>
+        <Feature width = {50} height = {50} text = "Create code templates in over 100 languages" imageUrl = "/images/languageListing.png"></Feature>
+        <Feature width = {500} height = {500} text = "Develop and save code in an interactive code editor" imageUrl = "/images/codeEditor.png"></Feature>
       </div>
-      <Button><Link href = "/signUp">Get Started</Link></Button>
+      <Button className = 'mb-12'><Link href = "/signUp">Get Started</Link></Button>
       </div>
     </div>
   );

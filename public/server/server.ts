@@ -79,7 +79,7 @@ app.put('/user', async (req, res) => {
         console.log(error);
     }
     else {
-        if (data) {
+        if (data && data.length > 0) {
             res.status(500).json("Email already in use");
         }
         else {
@@ -88,7 +88,7 @@ app.put('/user', async (req, res) => {
                 console.log(error);
             }
             else {
-                if (data) {
+                if (data && data.length > 0) {
                     console.log("username in use");
                     res.status(500).json("Username already in use");
                 }
