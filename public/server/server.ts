@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { v4 as uuidv4 } from 'uuid';
-import sgMail from '@sendgrid/mail';
+import { Resend } from 'resend';
 import * as bcrypt from 'bcrypt';
 import cookieParser from 'cookie-parser';
 
@@ -18,11 +18,12 @@ app.use(cors({
     origin: 'http://localhost:3000',
     credentials: true
 }));
+
 app.use(cookieParser());
 
 const supabaseClient = createClient("https://jkosvxuxzuxvzoqtwoup.supabase.co", process.env.SUPABASE_KEY!);
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+const resend = new Resend(process.env.RESEND_API_KEY!);
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
 
@@ -30,18 +31,20 @@ app.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
         const { data, error } = await supabaseClient.from("users").select().eq('username', username);
-        if (!data) {
-            res.status(500).json("Invalid username.");
+        if (error) {
+            res.status(401).json(error.message);
+        }
+        if (!data || data.length === 0) {
+            res.status(401).json("Invalid username.");
         }
         else {
             const userPassword = data[0].password;
             const comparisonResult = await bcrypt.compare(password, userPassword);
             if (!comparisonResult) {
-                res.status(500).json("Invalid password.");
+                res.status(401).json("Invalid password.");
             }
             else {
                 const token = functions.createJWT(data[0].userID);
-                console.log(`Token ${token}`);
                 res.cookie("token", token, {
                     httpOnly: true,
                     sameSite: 'strict',
@@ -52,7 +55,7 @@ app.post('/login', async (req, res) => {
         }
     }
     catch (error) {
-        console.error(error);
+        res.status(401).json(error);
     }
 });
 
@@ -60,7 +63,6 @@ app.get('/logout', (req, res) => {
     try {
         res.clearCookie("token", {
             httpOnly: true,
-            secure: true,
             sameSite: 'strict'
         });
         res.status(200).json("User logged out");
@@ -77,8 +79,7 @@ app.put('/user', async (req, res) => {
         console.log(error);
     }
     else {
-        if (data.length > 0) {
-            console.log("error");
+        if (data) {
             res.status(500).json("Email already in use");
         }
         else {
@@ -87,7 +88,7 @@ app.put('/user', async (req, res) => {
                 console.log(error);
             }
             else {
-                if (data.length > 0) {
+                if (data) {
                     console.log("username in use");
                     res.status(500).json("Username already in use");
                 }
@@ -100,7 +101,7 @@ app.put('/user', async (req, res) => {
                         res.status(500).json(error);
                     }
                     else {
-                        const token = functions.createJWT(data[0].userID);
+                        const token = functions.createJWT(userID);
                         res.cookie("token", token, {
                             httpOnly: true,
                             sameSite: 'strict',
@@ -123,7 +124,13 @@ app.delete('/user', async (req, res) => {
             res.status(500).json(error);
         }
         else {
-            res.status(200).json("User successfully deleted");
+            const { error } = await supabaseClient.from("templates").delete().eq('userID', userID);
+            if (error) {
+                res.status(500).json(error);
+            }
+            else {
+                res.status(200).json("User successfully deleted");
+            }
         }
     }
     catch (error) {
@@ -133,7 +140,7 @@ app.delete('/user', async (req, res) => {
 });
 
 app.post('/resetCredentials', async (req, res) => {
-    const email = req.body;
+    const { email } = req.body;
     const { data, error } = await supabaseClient.from('users').select().eq("email", email);
     if (error) {
         res.status(500).json(error.message);
@@ -143,20 +150,21 @@ app.post('/resetCredentials', async (req, res) => {
             res.status(500).json("Email not found.");
         }
         else {
-            const msg = {
-                to: `${email}`,
-                from: "placeholder@example.com",
-                subject: "CodeTemplates: Reset credentials",
-                html: `<h1>Go to the following link to reset your email: <a href = "http://localhost:3000/resetCredentials"></a></h1>`
-            };
             try {
-                await sgMail.send(msg);
-            }
-            catch (error) {
-                console.error(error);
-                res.status(401).json(error);
-            }
-
+            await resend.emails.send({
+                from: 'onboarding@resend.dev',
+                to: [email],
+                subject: 'CodeTemplates: Reset Credentials',
+                html: `<h3>
+                <p>Reset your credentials at <a href = "http://localhost:3000/resetCredentials?email=${email}">this link.</a></p>
+                </h3>`,
+            });
+            res.status(200).json("Reset email sent successfully.");
+        }
+        catch (error) {
+            console.log(error);
+            res.status(401).json(error);
+        }
         }
     }
 });
@@ -165,8 +173,9 @@ app.post('/credentials', async (req, res) => {
     const { email, username, password } = req.body;
     const hashedPassword = await functions.hashPassword(password);
     try {
-        const { error } = await supabaseClient.from('users').update({ email: email, username: username, password: hashedPassword });
+        const { error } = await supabaseClient.from('users').update({username: username, password: hashedPassword }).eq('email', email);
         if (error) {
+            console.log(error);
             res.status(401).json(error.message);
         }
         else {
@@ -202,7 +211,6 @@ app.get('/template/:id', async (req, res) => {
         const token = req.cookies.token;
         await jwt.verify(token, process.env.JWT_KEY!) as jwt.JwtPayload;
         const id = req.params.id;
-        console.log(`Id ${id}`);
         const { data, error } = await supabaseClient.from('templates').select('name, language, code').eq('id', id);
         if (error) {
             console.log(error.message);
@@ -241,7 +249,6 @@ app.put('/template', async (req, res) => {
     }
 });
 
-// Modify code template
 app.post('/template/:id', async (req, res) => {
     try {
         console.log(req.params);
@@ -288,6 +295,7 @@ app.post('/email', async (req, res) => {
         const { email } = req.body;
         const { error } = await supabaseClient.from('users').update({ email: email }).eq('userID', userID);
         if (error) {
+            console.log(error);
             res.status(500).json(error.message);
         }
         else {

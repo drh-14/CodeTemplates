@@ -2,8 +2,11 @@
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 export default function ResetCredentials(){
+    const searchParams = useSearchParams();
+    const email = searchParams.get("email");
+    console.log(email);
     const router = useRouter();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -14,7 +17,7 @@ export default function ResetCredentials(){
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({username: username, password: password})
+            body: JSON.stringify({email: email, username: username, password: password})
         });
         if(response.status === 200){
             router.push('/');

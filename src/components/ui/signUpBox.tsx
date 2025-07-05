@@ -47,11 +47,11 @@ export default function SignInBox() {
     return (
         <div className='w-1/5 rounded-md border-2 border-black gap-8 flex flex-col gap-12 items-center p-4'>
             <Input onChange={(e) => setEmail(e.target.value)} placeholder="Email"></Input>
-            {emailError ? <h1>{emailError}</h1> : null}
+            {emailError ? <h1 className = 'text-red-500'>{emailError}</h1> : null}
             <Input onChange={(e) => setUsername(e.target.value)} placeholder="Username"></Input>
-            {usernameError ? <h1>{usernameError}</h1> : null}
+            {usernameError ? <h1 className = 'text-red-500'>{usernameError}</h1> : null}
             <Input onChange={(e) => setPassword(e.target.value)} placeholder="Password"></Input>
-            {passwordError ? <h1>{passwordError}</h1> : null}
+            {passwordError ? <h1 className = 'text-red-500'>{passwordError}</h1> : null}
             <Button onClick={handleSignUp}>Sign Up</Button>
         </div>
     )

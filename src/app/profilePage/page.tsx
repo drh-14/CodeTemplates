@@ -99,7 +99,7 @@ export default function ProfilePage() {
             <div className='flex flex-col items-center gap-8'>
                 <Dialog open = {changeEmailOpen}>
                     <DialogTrigger asChild><Button onClick = {() => setChangeEmailOpen(true)}>Change Email</Button></DialogTrigger>
-                    <DialogContent>
+                    <DialogContent onInteractOutside={() => setChangeEmailOpen(false)}>
                         <DialogTitle></DialogTitle>
                         <div className = 'flex flex-col gap-6'>
                         <Input onChange = {(e) => setEmail(e.target.value)} placeholder = "Enter new email"></Input>
@@ -109,7 +109,7 @@ export default function ProfilePage() {
                 </Dialog>
                 <Dialog open = {changeUsernameOpen}>
                     <DialogTrigger asChild><Button onClick = {() => setChangeUsernameOpen(true)}>Change Username</Button></DialogTrigger>
-                    <DialogContent>
+                    <DialogContent onInteractOutside={() => setChangeUsernameOpen(false)}>
                         <DialogHeader>
                             <DialogTitle></DialogTitle>
                             <div className = 'flex flex-col gap-6'>
@@ -121,7 +121,7 @@ export default function ProfilePage() {
                 </Dialog>
                 <Dialog open = {changePasswordOpen}>
                     <DialogTrigger asChild><Button onClick = {() => setChangePasswordOpen(true)}>Change Password</Button></DialogTrigger>
-                    <DialogContent>
+                    <DialogContent onInteractOutside={() => setChangePasswordOpen(false)}>
                         <DialogHeader>
                             <DialogTitle></DialogTitle>
                             <div className = 'flex flex-col gap-6'>
@@ -133,7 +133,7 @@ export default function ProfilePage() {
                 </Dialog>
                 <Dialog open = {deleteAccountOpen}>
                     <DialogTrigger asChild><Button onClick = {() => setDeleteAccountOpen(true)}>Delete Account</Button></DialogTrigger>
-                    <DialogContent>
+                    <DialogContent onInteractOutside={() => setDeleteAccountOpen(false)}>
                         <DialogHeader>
                             <div className = 'flex flex-col gap-6'>
                             <DialogTitle>Are you sure you want to delete your account?</DialogTitle>
