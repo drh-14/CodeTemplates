@@ -1,7 +1,7 @@
 'use client'
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 export default function ResetCredentials(){
     const searchParams = useSearchParams();
@@ -25,10 +25,12 @@ export default function ResetCredentials(){
     }
 
     return(
+        <Suspense>
         <div className = 'flex flex-col items-center mt-12 gap-8'>
             <Input onChange = {(e) => setUsername(e.target.value)} className = 'w-1/4' placeholder = "New username"></Input>
             <Input onChange = {(e) => setPassword(e.target.value)} className = 'w-1/4' placeholder = "New password"></Input>
             <Button onClick = {changeCredentials}>Change Credentials</Button>
         </div>
+        </Suspense>
     )
 }

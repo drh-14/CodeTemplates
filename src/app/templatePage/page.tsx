@@ -1,7 +1,7 @@
 'use client'
 import { Button } from '../../components/ui/button';
 import CodeBox from '../../components/ui/codeBox';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Input } from '../../components/ui/input';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation'
@@ -90,6 +90,7 @@ export default function TemplatePage() {
         }
     };
     return (
+        <Suspense>
         <div className='flex flex-col gap-8 items-center mt-24'>
             <LanguageDropdown language = {language} setLanguage = {setLanguage}></LanguageDropdown>
             {languageError ? <h1 className = 'text-red-600'>{languageError}</h1> : null}
@@ -99,5 +100,6 @@ export default function TemplatePage() {
             <Button onClick={saveChanges}>Save Changes</Button>
             <Button onClick={deleteTemplate}>Delete Template</Button>
         </div>
+        </Suspense>
     )
 }
