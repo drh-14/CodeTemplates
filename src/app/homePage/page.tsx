@@ -16,6 +16,7 @@ export default async function HomePage(){
             'Authorization': token
         }
     });
+    console.log(await verifyJwtResponse.json());
     if(verifyJwtResponse.status === 401){
         redirect('/');
     }
