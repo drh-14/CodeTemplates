@@ -79,6 +79,7 @@ app.put('/user', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { data, error } = yield supabaseClient.from('users').select().match({ email: email });
     if (error) {
         console.log(error);
+        res.status(401).json(error.message);
     }
     else {
         if (data && data.length > 0) {
