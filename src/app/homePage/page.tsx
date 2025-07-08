@@ -9,7 +9,6 @@ export default async function HomePage(){
     const token = cookieStore.get('token')?.value;
     console.log(token);
     if (!token) {
-
         redirect('/');
     }
     const verifyJwtResponse = await fetch("https://code-templates-7eaeb796712f.herokuapp.com/jwtServer", {
@@ -18,7 +17,6 @@ export default async function HomePage(){
             'Authorization': token
         }
     });
-    console.log(await verifyJwtResponse.json());
     if(verifyJwtResponse.status === 401){
         redirect('/');
     }

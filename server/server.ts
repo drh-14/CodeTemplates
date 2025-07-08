@@ -79,6 +79,7 @@ app.put('/user', async (req, res) => {
     const { data, error } = await supabaseClient.from('users').select().match({ email: email });
     if (error) {
         console.log(error);
+        res.status(401).json(error.message);
     }
     else {
         if (data && data.length > 0) {
