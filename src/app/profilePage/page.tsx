@@ -9,7 +9,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from 'react';
 import { Button } from '../../components/ui/button';
-import { handleSignOut } from '../../components/ui/homeButtons';
+import { handleSignOut } from '../../components/homeButtons';
 import { useRouter } from 'next/navigation';
 export default function ProfilePage() {
     const [changeUsernameOpen, setChangeUsernameOpen] = useState(false);

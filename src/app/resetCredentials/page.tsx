@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import ResetCredentials from '../../components/ui/resetCredentials';
+import ResetCredentials from '../../components/resetCredentials';
 
 export default function ResetCredentialsPage(){
     function Fallback(){

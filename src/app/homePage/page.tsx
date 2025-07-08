@@ -1,6 +1,6 @@
 import { Button } from '../../components/ui/button';
-import TemplateListing from '../../components/ui/templateListing';
-import { HomeButtons } from '../../components/ui/homeButtons';
+import TemplateListing from '../../components/templateListing';
+import { HomeButtons } from '../../components/homeButtons';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';

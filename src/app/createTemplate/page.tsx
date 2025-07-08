@@ -1,10 +1,10 @@
 'use client'
-import CodeBox from '../../components/ui/codeBox';
+import CodeBox from '../../components/codeBox';
 import { Button } from '../../components/ui/button';
 import { useState, useEffect } from 'react';
 import { Input } from '../../components/ui/input';
 import { useRouter } from 'next/navigation';
-import LanguageDropdown from '../../components/ui/languageDropdown';
+import LanguageDropdown from '../../components/languageDropdown';
 export default function CreateTemplate(){
     const router = useRouter();
     const [name, setName] = useState("");

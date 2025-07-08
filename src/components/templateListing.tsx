@@ -1,4 +1,4 @@
-import TemplateBox from '../../components/ui/templateBox';
+import TemplateBox from './templateBox';
 export default function TemplateListing(props: {templates : {name: string, id: string, language: string}[]}){
     return(
         <div className = 'flex flex-col gap-20 items-center'>

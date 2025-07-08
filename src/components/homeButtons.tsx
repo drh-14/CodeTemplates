@@ -1,6 +1,6 @@
 'use client'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
-import { Button } from './button';
+import { Button } from './ui/button';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 

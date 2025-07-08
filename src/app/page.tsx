@@ -1,4 +1,4 @@
-import Feature from '../components/ui/feature';
+import Feature from '../components/feature';
 import { Button } from '../components/ui/button'
 import Link from 'next/link';
 export default function Home() {
