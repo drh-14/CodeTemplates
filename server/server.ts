@@ -11,7 +11,6 @@ import cookieParser from 'cookie-parser';
 
 dotenv.config();
 const app = express();
-const PORT = 8000;
 
 app.use(express.json());
 app.use(cors({
@@ -25,7 +24,7 @@ const supabaseClient = createClient("https://jkosvxuxzuxvzoqtwoup.supabase.co", 
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
-app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+app.listen(process.env.PORT, () => console.log(`Server listening on port ${process.env.PORT}`));
 
 app.post('/login', async (req, res) => {
     try {
