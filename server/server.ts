@@ -117,7 +117,7 @@ app.put('/user', async (req, res) => {
 
 app.delete('/user', async (req, res) => {
     try {
-        const payload = await jwt.verify(req.cookies.token, process.env.JWT_KEY!) as jwt.JwtPayload;
+        const payload = jwt.verify(req.cookies.token, process.env.JWT_KEY!) as jwt.JwtPayload;
         const userID = payload.userID;
         const { error } = await supabaseClient.from("users").delete().eq('userID', userID);
         if (error) {
@@ -209,7 +209,7 @@ app.get("/templates", async (req, res) => {
 app.get('/template/:id', async (req, res) => {
     try {
         const token = req.cookies.token;
-        await jwt.verify(token, process.env.JWT_KEY!) as jwt.JwtPayload;
+        jwt.verify(token, process.env.JWT_KEY!) as jwt.JwtPayload;
         const id = req.params.id;
         const { data, error } = await supabaseClient.from('templates').select('name, language, code').eq('id', id);
         if (error) {
@@ -253,7 +253,7 @@ app.post('/template/:id', async (req, res) => {
     try {
         console.log(req.params);
         const token = req.cookies.token;
-        await jwt.verify(token, process.env.JWT_KEY!) as jwt.JwtPayload;
+        jwt.verify(token, process.env.JWT_KEY!) as jwt.JwtPayload;
         const { code, name, language } = req.body;
         const id = req.params.id;
         const { error } = await supabaseClient.from('templates').update({ code: code, name: name, language: language }).eq('id', id);
@@ -272,7 +272,7 @@ app.post('/template/:id', async (req, res) => {
 app.delete('/template/:id', async (req, res) => {
     try {
         const token = req.cookies.token;
-        await jwt.verify(token, process.env.JWT_KEY!);
+        jwt.verify(token, process.env.JWT_KEY!);
         const id = req.params.id;
         const { error } = await supabaseClient.from('templates').delete().eq('id', id);
         if (error) {
@@ -290,7 +290,7 @@ app.delete('/template/:id', async (req, res) => {
 app.post('/email', async (req, res) => {
     try {
         const token = req.cookies.token;
-        const payload = await jwt.verify(token, process.env.JWT_KEY!) as jwt.JwtPayload;
+        const payload = jwt.verify(token, process.env.JWT_KEY!) as jwt.JwtPayload;
         const userID = payload.userID;
         const { email } = req.body;
         const { error } = await supabaseClient.from('users').update({ email: email }).eq('userID', userID);
@@ -311,7 +311,7 @@ app.post('/email', async (req, res) => {
 app.post('/username', async (req, res) => {
     try {
         const token = req.cookies.token;
-        const payload = await jwt.verify(token, process.env.JWT_KEY!) as jwt.JwtPayload;
+        const payload = jwt.verify(token, process.env.JWT_KEY!) as jwt.JwtPayload;
         const userID = payload.userID;
         const { username } = req.body;
         const { error } = await supabaseClient.from('users').update({ username: username }).eq('userID', userID);
@@ -330,7 +330,7 @@ app.post('/username', async (req, res) => {
 app.post('/password', async (req, res) => {
     try {
         const token = req.cookies.token;
-        const payload = await jwt.verify(token, process.env.JWT_KEY!) as jwt.JwtPayload;
+        const payload = jwt.verify(token, process.env.JWT_KEY!) as jwt.JwtPayload;
         const userID = payload.userID;
         const { password } = req.body;
         const hashedPassword = await functions.hashPassword(password);
@@ -350,7 +350,7 @@ app.post('/password', async (req, res) => {
 app.get('/jwtClient', async (req, res) => {
     try {
         const token = req.cookies.token;
-        await jwt.verify(token, process.env.JWT_KEY!);
+        jwt.verify(token, process.env.JWT_KEY!);
         res.status(200).json("Valid token.");
     }
     catch (error) {
@@ -363,7 +363,8 @@ app.get('/jwtClient', async (req, res) => {
 app.get('/jwtServer', async (req, res) => {
     try {
         const authHeader = req.headers.authorization as string;
-        await jwt.verify(authHeader, process.env.JWT_KEY!);
+        console.log(authHeader);
+        jwt.verify(authHeader, process.env.JWT_KEY!);
         res.status(200).json("Valid token.");
 
     }
