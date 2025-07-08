@@ -19,16 +19,16 @@ import * as bcrypt from 'bcrypt';
 import cookieParser from 'cookie-parser';
 dotenv.config();
 const app = express();
-const PORT = 8000;
 app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:3000',
-    credentials: true
+    origin: 'https://code-templates.vercel.app',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 }));
 app.use(cookieParser());
 const supabaseClient = createClient("https://jkosvxuxzuxvzoqtwoup.supabase.co", process.env.SUPABASE_KEY);
 const resend = new Resend(process.env.RESEND_API_KEY);
-app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+app.listen(process.env.PORT, () => console.log(`Server listening on port ${process.env.PORT}`));
 app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username, password } = req.body;
