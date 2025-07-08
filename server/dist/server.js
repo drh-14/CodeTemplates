@@ -116,7 +116,7 @@ app.put('/user', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 }));
 app.delete('/user', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const payload = yield jwt.verify(req.cookies.token, process.env.JWT_KEY);
+        const payload = jwt.verify(req.cookies.token, process.env.JWT_KEY);
         const userID = payload.userID;
         const { error } = yield supabaseClient.from("users").delete().eq('userID', userID);
         if (error) {
@@ -204,7 +204,7 @@ app.get("/templates", (req, res) => __awaiter(void 0, void 0, void 0, function* 
 app.get('/template/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const token = req.cookies.token;
-        yield jwt.verify(token, process.env.JWT_KEY);
+        jwt.verify(token, process.env.JWT_KEY);
         const id = req.params.id;
         const { data, error } = yield supabaseClient.from('templates').select('name, language, code').eq('id', id);
         if (error) {
@@ -245,7 +245,7 @@ app.post('/template/:id', (req, res) => __awaiter(void 0, void 0, void 0, functi
     try {
         console.log(req.params);
         const token = req.cookies.token;
-        yield jwt.verify(token, process.env.JWT_KEY);
+        jwt.verify(token, process.env.JWT_KEY);
         const { code, name, language } = req.body;
         const id = req.params.id;
         const { error } = yield supabaseClient.from('templates').update({ code: code, name: name, language: language }).eq('id', id);
@@ -263,7 +263,7 @@ app.post('/template/:id', (req, res) => __awaiter(void 0, void 0, void 0, functi
 app.delete('/template/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const token = req.cookies.token;
-        yield jwt.verify(token, process.env.JWT_KEY);
+        jwt.verify(token, process.env.JWT_KEY);
         const id = req.params.id;
         const { error } = yield supabaseClient.from('templates').delete().eq('id', id);
         if (error) {
@@ -280,7 +280,7 @@ app.delete('/template/:id', (req, res) => __awaiter(void 0, void 0, void 0, func
 app.post('/email', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const token = req.cookies.token;
-        const payload = yield jwt.verify(token, process.env.JWT_KEY);
+        const payload = jwt.verify(token, process.env.JWT_KEY);
         const userID = payload.userID;
         const { email } = req.body;
         const { error } = yield supabaseClient.from('users').update({ email: email }).eq('userID', userID);
@@ -299,7 +299,7 @@ app.post('/email', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 app.post('/username', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const token = req.cookies.token;
-        const payload = yield jwt.verify(token, process.env.JWT_KEY);
+        const payload = jwt.verify(token, process.env.JWT_KEY);
         const userID = payload.userID;
         const { username } = req.body;
         const { error } = yield supabaseClient.from('users').update({ username: username }).eq('userID', userID);
@@ -317,7 +317,7 @@ app.post('/username', (req, res) => __awaiter(void 0, void 0, void 0, function* 
 app.post('/password', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const token = req.cookies.token;
-        const payload = yield jwt.verify(token, process.env.JWT_KEY);
+        const payload = jwt.verify(token, process.env.JWT_KEY);
         const userID = payload.userID;
         const { password } = req.body;
         const hashedPassword = yield functions.hashPassword(password);
@@ -336,7 +336,7 @@ app.post('/password', (req, res) => __awaiter(void 0, void 0, void 0, function* 
 app.get('/jwtClient', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const token = req.cookies.token;
-        yield jwt.verify(token, process.env.JWT_KEY);
+        jwt.verify(token, process.env.JWT_KEY);
         res.status(200).json("Valid token.");
     }
     catch (error) {
@@ -347,7 +347,8 @@ app.get('/jwtClient', (req, res) => __awaiter(void 0, void 0, void 0, function* 
 app.get('/jwtServer', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const authHeader = req.headers.authorization;
-        yield jwt.verify(authHeader, process.env.JWT_KEY);
+        console.log(authHeader);
+        jwt.verify(authHeader, process.env.JWT_KEY);
         res.status(200).json("Valid token.");
     }
     catch (error) {
