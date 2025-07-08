@@ -89,8 +89,13 @@ export default function TemplatePage() {
             console.error(error);
         }
     };
+
+    function Fallback(){
+        return <h1></h1>
+    };
+
     return (
-        <Suspense>
+        <Suspense fallback = {<Fallback></Fallback>}>
         <div className='flex flex-col gap-8 items-center mt-24'>
             <LanguageDropdown language = {language} setLanguage = {setLanguage}></LanguageDropdown>
             {languageError ? <h1 className = 'text-red-600'>{languageError}</h1> : null}

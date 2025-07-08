@@ -24,8 +24,12 @@ export default function ResetCredentials(){
         }
     }
 
+    function Fallback(){
+        return <h1></h1>
+    }
+
     return(
-        <Suspense>
+        <Suspense fallback = {<Fallback></Fallback>}>
         <div className = 'flex flex-col items-center mt-12 gap-8'>
             <Input onChange = {(e) => setUsername(e.target.value)} className = 'w-1/4' placeholder = "New username"></Input>
             <Input onChange = {(e) => setPassword(e.target.value)} className = 'w-1/4' placeholder = "New password"></Input>
