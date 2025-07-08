@@ -7,7 +7,9 @@ import { redirect } from 'next/navigation';
 export default async function HomePage(){
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
+    console.log(token);
     if (!token) {
+
         redirect('/');
     }
     const verifyJwtResponse = await fetch("https://code-templates-7eaeb796712f.herokuapp.com/jwtServer", {
