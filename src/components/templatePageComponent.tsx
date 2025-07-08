@@ -18,7 +18,7 @@ export default function TemplatePageComponent() {
 
     useEffect(() => {
         const verifyJWT = async () => {
-            const response = await fetch("http://localhost:8000/jwtClient", {
+            const response = await fetch("https://code-templates.herokuapp.com/jwtClient", {
                 method: "GET",
                 credentials: "include"
             });
@@ -31,7 +31,7 @@ export default function TemplatePageComponent() {
 
     useEffect(() => {
         const getCode = async () => {
-            const response = await fetch(`http://localhost:8000/template/${id}`, {
+            const response = await fetch(`https://code-templates.herokuapp.com/template/${id}`, {
                 method: "GET",
                 credentials: "include"
             });
@@ -57,7 +57,7 @@ export default function TemplatePageComponent() {
                 setLanguageError("Must select a language.");
             }
             if(!nameError  && !languageError){
-                const response = await fetch(`http://localhost:8000/template/${id}`, {
+                const response = await fetch(`https://code-templates.herokuapp.com/template/${id}`, {
                 method: "POST",
                 credentials: "include",
                 headers: {
@@ -77,7 +77,7 @@ export default function TemplatePageComponent() {
 
     const deleteTemplate = async () => {
         try {
-            const response = await fetch(`http://localhost:8000/template/${id}`, {
+            const response = await fetch(`https://code-templates.herokuapp.com/template/${id}`, {
                 method: "DELETE",
                 credentials: "include"
             });

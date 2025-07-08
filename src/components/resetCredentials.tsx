@@ -14,7 +14,7 @@ export default function ResetCredentials() {
   const [password, setPassword] = useState('');
 
   const changeCredentials = async () => {
-    const response = await fetch('http://localhost:8000/credentials', {
+    const response = await fetch('https://code-templates.herokuapp.com/credentials', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, username, password }),

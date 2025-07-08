@@ -15,7 +15,7 @@ export default function CreateTemplate(){
 
     useEffect(() => {
         const verifyJWT = async () => {
-            const response = await fetch("http://localhost:8000/jwtClient", {
+            const response = await fetch("https://code-templates.herokuapp.com/jwtClient", {
                 method: "GET",
                 credentials: "include"
             });
@@ -38,7 +38,7 @@ export default function CreateTemplate(){
                 setLanguageError("Must select a language.");
             }
             if(!nameError && !languageError){
-                 const response = await fetch("http://localhost:8000/template", {
+                 const response = await fetch("https://code-templates.herokuapp.com/template", {
                 method: "PUT",
                 credentials: "include",
                 headers: {

@@ -10,7 +10,7 @@ export default async function HomePage(){
     if (!token) {
         redirect('/');
     }
-    const verifyJwtResponse = await fetch("http://localhost:8000/jwtServer", {
+    const verifyJwtResponse = await fetch("https://code-templates.herokuapp.com/jwtServer", {
         "method": "GET",
         headers: {
             'Authorization': token
@@ -19,7 +19,7 @@ export default async function HomePage(){
     if(verifyJwtResponse.status === 401){
         redirect('/');
     }
-    const response = await fetch("http://localhost:8000/templates", {
+    const response = await fetch("https://code-templates.herokuapp.com/templates", {
         method: "GET",
         headers: {
             "Authorization": token
