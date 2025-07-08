@@ -9,7 +9,7 @@ export default function ForgotCredentials(){
     const [isError, setIsError] = useState(false);
     const resetCredentials = async () => {
         setIsError(false);
-        const res = await fetch("http://localhost:8000/resetCredentials", {
+        const res = await fetch("https://code-templates-7eaeb796712f.herokuapp.com/resetCredentials", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

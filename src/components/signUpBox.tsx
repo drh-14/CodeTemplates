@@ -26,7 +26,7 @@ export default function SignInBox() {
             setPasswordError("Password cannot be empty.");
         }
         if (!emailError && !usernameError && !passwordError) {
-            const response = await fetch("https://code-templates.herokuapp.com/user", {
+            const response = await fetch("https://code-templates-7eaeb796712f.herokuapp.com/user", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"

@@ -19,7 +19,7 @@ export default function ProfilePage() {
     const router = useRouter();
     useEffect(() => {
         const verifyJWT = async () => {
-            const response = await fetch('https://code-templates.herokuapp.com/jwtClient', {
+            const response = await fetch('https://code-templates-7eaeb796712f.herokuapp.com/jwtClient', {
                 method: "GET",
                 credentials: "include"
             });
@@ -35,7 +35,7 @@ export default function ProfilePage() {
     const [password, setPassword] = useState("");
 
     const changeEmail =  async () => {
-        const response = await fetch("https://code-templates.herokuapp.com/email", {
+        const response = await fetch("https://code-templates-7eaeb796712f.herokuapp.com/email", {
             method: "POST",
             credentials: "include",
             headers: {
@@ -49,7 +49,7 @@ export default function ProfilePage() {
         }
     };
     const changeUsername = async () => {
-        const response = await fetch("https://code-templates.herokuapp.com/username", {
+        const response = await fetch("https://code-templates-7eaeb796712f.herokuapp.com/username", {
             method: "POST",
             credentials: "include",
             headers: {
@@ -64,7 +64,7 @@ export default function ProfilePage() {
     };
 
     const changePassword = async () => {
-        const response = await fetch("https://code-templates.herokuapp.com/password", {
+        const response = await fetch("https://code-templates-7eaeb796712f.herokuapp.com/password", {
             method: "POST",
             credentials: "include",
             headers: {
@@ -79,7 +79,7 @@ export default function ProfilePage() {
     };
 
     const deleteAccount = async () => {
-        const response = await fetch("https://code-templates.herokuapp.com/user", {
+        const response = await fetch("https://code-templates-7eaeb796712f.herokuapp.com/user", {
             method: "DELETE",
             credentials: "include",
             headers: {

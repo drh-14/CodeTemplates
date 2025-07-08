@@ -10,7 +10,7 @@ export default async function HomePage(){
     if (!token) {
         redirect('/');
     }
-    const verifyJwtResponse = await fetch("https://code-templates.herokuapp.com/jwtServer", {
+    const verifyJwtResponse = await fetch("https://code-templates-7eaeb796712f.herokuapp.com/jwtServer", {
         "method": "GET",
         headers: {
             'Authorization': token
@@ -19,7 +19,7 @@ export default async function HomePage(){
     if(verifyJwtResponse.status === 401){
         redirect('/');
     }
-    const response = await fetch("https://code-templates.herokuapp.com/templates", {
+    const response = await fetch("https://code-templates-7eaeb796712f.herokuapp.com/templates", {
         method: "GET",
         headers: {
             "Authorization": token

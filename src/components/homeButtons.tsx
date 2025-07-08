@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 const handleSignOut =  async (router: AppRouterInstance) => {
-        const response = await fetch("https://code-templates.herokuapp.com/logout", {
+        const response = await fetch("https://code-templates-7eaeb796712f.herokuapp.com/logout", {
             method: "GET"
         });
         if(response.status === 200){
