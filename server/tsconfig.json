@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es2016",                                
+    "module": "nodenext",                                         
+    "noEmit": false,                                   
+    "allowSyntheticDefaultImports": true,
+     "outDir": "./dist",           
+    "esModuleInterop": true,           
+    "forceConsistentCasingInFileNames": true,
+     "moduleResolution":"nodenext",            
+    "strict": true,                                   
+    "noImplicitAny": true,                           
+    "strictNullChecks": true,                         
+    "strictFunctionTypes": true,                     
+    "alwaysStrict": true,                        
+    "noUnusedLocals": true,   
+    "noUnusedParameters": true,                  
+    "skipDefaultLibCheck": true,                   
+    "skipLibCheck": true                                
+  }
+}
