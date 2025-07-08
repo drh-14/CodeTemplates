@@ -49,7 +49,8 @@ app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 const token = functions.createJWT(data[0].userID);
                 res.cookie("token", token, {
                     httpOnly: true,
-                    sameSite: 'strict',
+                    secure: true,
+                    sameSite: 'none',
                     maxAge: 60 * 60 * 1000
                 });
                 res.status(200).json("Logged in successfully.");
