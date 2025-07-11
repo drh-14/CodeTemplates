@@ -51,8 +51,7 @@ app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                     httpOnly: true,
                     secure: true,
                     sameSite: 'none',
-                    maxAge: 60 * 60 * 1000,
-                    partitioned: true
+                    maxAge: 60 * 60 * 1000
                 });
                 res.status(200).json("Logged in successfully.");
             }
@@ -79,6 +78,7 @@ app.put('/user', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { data, error } = yield supabaseClient.from('users').select().match({ email: email });
     if (error) {
         console.log(error);
+        res.status(401).json(error.message);
     }
     else {
         if (data && data.length > 0) {

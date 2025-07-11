@@ -11,7 +11,6 @@ import cookieParser from 'cookie-parser';
 
 dotenv.config();
 const app = express();
-
 app.use(express.json());
 app.use(cors({
     origin: 'https://code-templates.vercel.app',
@@ -49,8 +48,7 @@ app.post('/login', async (req, res) => {
                     httpOnly: true,
                     secure: true,
                     sameSite: 'none',
-                    maxAge: 60 * 60 * 1000,
-                    partitioned: true
+                    maxAge: 60 * 60 * 1000
                 });
                 res.status(200).json("Logged in successfully.");
             }
