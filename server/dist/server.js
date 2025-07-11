@@ -51,8 +51,7 @@ app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                     httpOnly: true,
                     secure: true,
                     sameSite: 'none',
-                    maxAge: 60 * 60 * 1000,
-                    partitioned: true
+                    maxAge: 60 * 60 * 1000
                 });
                 res.status(200).json("Logged in successfully.");
             }
