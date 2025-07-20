@@ -12,6 +12,7 @@ export default function SignInBox() {
     const [emailError, setEmailError] = useState("");
     const [usernameError, setUsernameError] = useState("");
     const [passwordError, setPasswordError] = useState("");
+    const token = localStorage.getItem("jwt")!;
     const handleSignUp = async () => {
         setEmailError("");
         setUsernameError("");
@@ -29,11 +30,14 @@ export default function SignInBox() {
             const response = await fetch("https://code-templates-7eaeb796712f.herokuapp.com/user", {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": token
                 },
                 body: JSON.stringify({email: email, username: username, password: password})
             });
             if (response.status === 200) {
+                const data = await response.json();
+                localStorage.setItem("jwt", data);
                 router.push('/homePage');
             }
             else{

@@ -7,12 +7,14 @@ export default function ForgotCredentials(){
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [isError, setIsError] = useState(false);
+    const token = localStorage.getItem("jwt")!;
     const resetCredentials = async () => {
         setIsError(false);
         const res = await fetch("https://code-templates-7eaeb796712f.herokuapp.com/resetCredentials", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": token
             },
             body: JSON.stringify({email: email})
         });

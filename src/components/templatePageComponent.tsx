@@ -6,6 +6,7 @@ import { Input } from './ui/input';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation'
 import LanguageDropdown from './languageDropdown';
+import { TokenExpiredError } from 'jsonwebtoken';
 export default function TemplatePageComponent() {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -15,12 +16,16 @@ export default function TemplatePageComponent() {
     const [language, setLanguage] = useState(searchParams.get('language') || "");
     const [nameError, setNameError] = useState("");
     const [languageError, setLanguageError] = useState("");
+    const token = localStorage.getItem("jwt")!;
+
 
     useEffect(() => {
         const verifyJWT = async () => {
             const response = await fetch("https://code-templates-7eaeb796712f.herokuapp.com/jwtClient", {
                 method: "GET",
-                credentials: "include"
+                headers: {
+                    "Authorization": token
+                }
             });
             if(response.status === 401){
                 router.push('/');
@@ -33,7 +38,9 @@ export default function TemplatePageComponent() {
         const getCode = async () => {
             const response = await fetch(`https://code-templates-7eaeb796712f.herokuapp.com/template/${id}`, {
                 method: "GET",
-                credentials: "include"
+                headers: {
+                    "Authorization": token
+                }
             });
             if(response.status === 200){
                 const data = await response.json();
@@ -61,7 +68,8 @@ export default function TemplatePageComponent() {
                 method: "POST",
                 credentials: "include",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": token
                 },
                 body: JSON.stringify({ name: name, code: value, language: language})
             });
@@ -79,7 +87,9 @@ export default function TemplatePageComponent() {
         try {
             const response = await fetch(`https://code-templates-7eaeb796712f.herokuapp.com/template/${id}`, {
                 method: "DELETE",
-                credentials: "include"
+                headers: {
+                    "Authorization": token
+                }
             });
             if (response.status === 200) {
                 router.push('/homePage');

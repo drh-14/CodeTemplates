@@ -12,11 +12,15 @@ export default function ResetCredentials() {
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const token = localStorage.getItem("jwt")!;
 
   const changeCredentials = async () => {
     const response = await fetch('https://code-templates-7eaeb796712f.herokuapp.com/credentials', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+         'Content-Type': 'application/json',
+         'Authorization': token
+        },
       body: JSON.stringify({ email, username, password }),
     });
 

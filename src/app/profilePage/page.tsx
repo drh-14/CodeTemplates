@@ -17,11 +17,14 @@ export default function ProfilePage() {
     const [changePasswordOpen, setChangePasswordOpen] = useState(false);
     const [deleteAccountOpen, setDeleteAccountOpen] = useState(false);
     const router = useRouter();
+    const token = localStorage.getItem("jwt")!;
     useEffect(() => {
         const verifyJWT = async () => {
             const response = await fetch('https://code-templates-7eaeb796712f.herokuapp.com/jwtClient', {
                 method: "GET",
-                credentials: "include"
+                headers: {
+                    'Authorization': token
+                }
             });
             if(response.status === 401){
                 router.push('/');
@@ -39,7 +42,8 @@ export default function ProfilePage() {
             method: "POST",
             credentials: "include",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": token
             },
             body: JSON.stringify({email: email})
         });
@@ -53,7 +57,8 @@ export default function ProfilePage() {
             method: "POST",
             credentials: "include",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": token
             },
             body: JSON.stringify({username: username})
         });
@@ -68,7 +73,8 @@ export default function ProfilePage() {
             method: "POST",
             credentials: "include",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": token
             },
             body: JSON.stringify({password: password})
         });
@@ -83,7 +89,8 @@ export default function ProfilePage() {
             method: "DELETE",
             credentials: "include",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": token
             },
         });
         if(response.status === 200){

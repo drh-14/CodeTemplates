@@ -11,6 +11,7 @@ export default function SignInBox(){
     const [error, setError] = useState("");
     const [usernameError, setUsernameError] = useState("");
     const [passwordError, setPasswordError] = useState("");
+    const token = localStorage.getItem("jwt")!;
     const handleLogin = async () => {
         setUsernameError("");
         setPasswordError("");
@@ -18,14 +19,15 @@ export default function SignInBox(){
         const response = await fetch("https://code-templates-7eaeb796712f.herokuapp.com/login", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": token
             },
             credentials: "include",
             body: JSON.stringify({username: username, password: password})
         });
         const data = await response.json();
-        console.log(data);
         if(response.status === 200){
+            localStorage.setItem("jwt", data);
             router.push('/homePage');
         }
         else{

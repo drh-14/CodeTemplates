@@ -12,12 +12,15 @@ export default function CreateTemplate(){
     const [value, setValue] = useState("");
     const [nameError, setNameError] = useState("");
     const [languageError, setLanguageError] = useState("");
+    const token = localStorage.getItem("jwt")!;
 
     useEffect(() => {
         const verifyJWT = async () => {
             const response = await fetch("https://code-templates-7eaeb796712f.herokuapp.com/jwtClient", {
                 method: "GET",
-                credentials: "include"
+                headers: {
+                    "Authorization": token
+                }
             });
             if(response.status === 401){
                 router.push('/');
@@ -40,9 +43,9 @@ export default function CreateTemplate(){
             if(!nameError && !languageError){
                  const response = await fetch("https://code-templates-7eaeb796712f.herokuapp.com/template", {
                 method: "PUT",
-                credentials: "include",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": token
                 },
                 body: JSON.stringify({name: name, code: value, language: language})
             });

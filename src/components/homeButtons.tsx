@@ -4,9 +4,14 @@ import { Button } from './ui/button';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+const token = localStorage.getItem("jwt")!;
+
 const handleSignOut =  async (router: AppRouterInstance) => {
         const response = await fetch("https://code-templates-7eaeb796712f.herokuapp.com/logout", {
-            method: "GET"
+            method: "GET",
+            headers: {
+                "Authorization": token
+            }
         });
         if(response.status === 200){
             router.push('/');

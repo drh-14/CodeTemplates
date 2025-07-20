@@ -2,15 +2,9 @@ import { Button } from '../../components/ui/button';
 import TemplateListing from '../../components/templateListing';
 import { HomeButtons } from '../../components/homeButtons';
 import Link from 'next/link';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 export default async function HomePage(){
-    const cookieStore = await cookies();
-    const token = cookieStore.get('token')?.value;
-    console.log(token);
-    if (!token) {
-        redirect('/');
-    }
+    const token = localStorage.getItem("jwt")!;
     const verifyJwtResponse = await fetch("https://code-templates-7eaeb796712f.herokuapp.com/jwtServer", {
         "method": "GET",
         headers: {
