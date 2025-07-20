@@ -6,7 +6,6 @@ import { Input } from './ui/input';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation'
 import LanguageDropdown from './languageDropdown';
-import { TokenExpiredError } from 'jsonwebtoken';
 export default function TemplatePageComponent() {
     const router = useRouter();
     const searchParams = useSearchParams();
