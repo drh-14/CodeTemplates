@@ -1,5 +1,4 @@
 import express from 'express';
-import * as functions from './functions.js';
 import { createClient } from '@supabase/supabase-js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
@@ -8,6 +7,15 @@ import { v4 as uuidv4 } from 'uuid';
 import { Resend } from 'resend';
 import * as bcrypt from 'bcrypt';
 import cookieParser from 'cookie-parser';
+
+function createJWT(payload: string){
+    return jwt.sign(payload, "password");
+}
+
+async function hashPassword(password: string){
+    const salt = await bcrypt.genSalt(10);
+    return await bcrypt.hash(password, salt);
+}
 
 dotenv.config();
 const app = express();
@@ -42,7 +50,7 @@ app.post('/login', async (req, res) => {
                 res.status(401).json("Invalid password.");
             }
             else {
-                const token = functions.createJWT(data[0].userID);
+                const token = createJWT(data[0].userID);
                 res.status(200).json(token);
             }
         }
@@ -88,14 +96,14 @@ app.put('/user', async (req, res) => {
                 }
                 else {
                     const userID = uuidv4();
-                    const hashedPassword = await functions.hashPassword(password);
+                    const hashedPassword = await hashPassword(password);
                     const { error } = await supabaseClient.from('users').insert({ username: username, email: email, password: hashedPassword, userID: userID });
                     if (error) {
                         console.log(error);
                         res.status(500).json(error);
                     }
                     else {
-                        const token = functions.createJWT(userID);
+                        const token = createJWT(userID);
                         res.cookie("token", token, {
                             httpOnly: true,
                             sameSite: 'strict',
@@ -165,7 +173,7 @@ app.post('/resetCredentials', async (req, res) => {
 
 app.post('/credentials', async (req, res) => {
     const { email, username, password } = req.body;
-    const hashedPassword = await functions.hashPassword(password);
+    const hashedPassword = await hashPassword(password);
     try {
         const { error } = await supabaseClient.from('users').update({username: username, password: hashedPassword }).eq('email', email);
         if (error) {
@@ -326,7 +334,7 @@ app.post('/password', async (req, res) => {
         const payload = jwt.verify(token, process.env.JWT_KEY!) as jwt.JwtPayload;
         const userID = payload.userID;
         const { password } = req.body;
-        const hashedPassword = await functions.hashPassword(password);
+        const hashedPassword = await hashPassword(password);
         const { error } = await supabaseClient.from('users').update({ userID: userID, password: hashedPassword }).eq('userID', userID);
         if (error) {
             res.status(500).json(error.message);
